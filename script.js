@@ -4,25 +4,7 @@ const productImage = document.getElementsByClassName("card-img-top p-2");
 
 let wineArray = [];
 
-/*class Wine {
-    constructor() {
-        this.wineName = addNewProduct.name.value;
-        this.winery = addNewProduct.winery.value;
-        this.vintage = addNewProduct.vintage.value;
-        this.region = addNewProduct.region.value;
-        this.country = addNewProduct.country.value;
-        this.picture = 
-    }
-
-    get data() {
-        return {
-            wineName, winery, vintage, region, country
-        }
-    }
-}
-*/
-
-let getData = () => {
+let getDataFromForm = () => {
     const wineName = addNewProduct.name.value;
     const winery = addNewProduct.winery.value;
     const vintage = addNewProduct.vintage.value;
@@ -34,12 +16,9 @@ let getData = () => {
     }
 }
 
-let test = () => {
-    this.data();
-    console.log(this.data())
-}
-
 let createProductCard = () => {
+    getDataFromForm();
+
     let cardDiv = document.createElement("div");
     cardDiv.className = "card";
     cardDiv.style = "width: 16rem;"
@@ -53,7 +32,7 @@ let createProductCard = () => {
     cardBody.className = "card-body";
 
     let title = document.createElement("h5");
-    title.innerHTML = "hello";
+    title.innerHTML = getDataFromForm().wineName;
     title.className = "card-title";
 
     let button = document.createElement("input");
@@ -66,12 +45,30 @@ let createProductCard = () => {
     cardDiv.appendChild(cardBody)
     cardBody.appendChild(title)
     cardBody.appendChild(button);
+}
+
+let fetchGoogleImage = () => {
+    fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o&cx=d669cff582af647b3&q=szepsyhttps://www.googleapis.com/customsearch/v1?key=AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o&cx=d669cff582af647b3&q=${getDataFromForm().wineName}&searchType=image`,
+        {
+            mode: "cors",
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then((response) => response.json()
+        .then((value) => console.log(value)))
+}
+
+let getImgSrc = () => {
 
 }
 
+//API Key : AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o
+//engine id/cx : d669cff582af647b3
+
 
 addNewProduct.addEventListener("submit", function (e) {
-    wineArray.push(getData())
+    wineArray.push(getDataFromForm())
     e.preventDefault();
     createProductCard();
 })
