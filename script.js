@@ -1,9 +1,26 @@
+/*let fetchGoogleImage = (wineImgSrc, wineName, winery, wineVintage) => {
+    fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o&cx=d669cff582af647b3&q=${wineName}%20${winery}%20${wineVintage}&searchType=image`,
+        {
+            mode: "cors",
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then((response) => response.json()
+            .then((value) => {
+                wineImgSrc.src = value.items[0].link;
+            }))
+}*/
+
 const addNewProduct = document.getElementById("addNewProduct");
 const addCardNode = document.getElementById("addContainer")
 const productImage = document.getElementsByClassName("card-img-top p-2");
+const emptyCard = document.getElementById("emptyCard");
+const vintageValidation = document.getElementById("vintage");
+let wineArray = [];
 
 class Wine {
-    constructor(wineName,winery,vintage,region,country) {
+    constructor(wineName, winery, vintage, region, country) {
         this.wineName = wineName;
         this.winery = winery;
         this.vintage = vintage;
@@ -12,14 +29,26 @@ class Wine {
     }
 }
 
-let wineArray = [];
-let valueOfFetch;
+//sessionStorage => maintains while the browser is open
+//localStorage => maintains continues to store data 
 
-let showArrayItems = () => {
+let removeEmptyContainer = () => {
     if (wineArray.length > 0) {
-        wineArray.forEach((item) => {
-            createProductCard(item)
-        })
+        emptyCard.style.display = "none";
+    } else {
+        emptyCard.style.display = "flex";
+    }
+}
+
+let checkRegex = (vintage) => {
+    const vintageRegex = /19\d{2}|20[01][0-9]|20[02][0-3]/;
+    if (vintageRegex.test(vintage) === true) {
+        console.log("Valid");
+        return vintage;
+    } else {
+        console.log(vintage)
+        console.log("Invalid");
+
     }
 }
 
@@ -33,21 +62,26 @@ let getDataFromForm = () => {
     return new Wine(wineName, winery, vintage, region, country)
 }
 
-let fetchGoogleImage = (wineImgSrc, wineName, wineVintage) => {
-    fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o&cx=d669cff582af647b3&q=${wineName}%20${wineVintage}&searchType=image`,
-        {
-            mode: "cors",
-            headers: {
-                'Accept': 'application/json'
+let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
+    try {
+        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o&cx=d669cff582af647b3&q=${wineName}%20${winery}%20${wineVintage}&searchType=image`,
+            {
+                mode: "cors",
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+        if (response.ok) {
+            const jsonData = await response.json();
+            if (jsonData) {
+                wineImgSrc.src = jsonData.items[0].link
             }
-        })
-        .then((response) => response.json()
-        .then((value) => {
-            wineImgSrc.src = value.items[0].link;
-            
-        }))
+        }
+    }
+    catch (error) {
+        console.error(error)
+    }
 }
-
 
 let createProductCard = (wine) => {
 
@@ -59,7 +93,9 @@ let createProductCard = (wine) => {
     let imgHold = document.createElement("img");
     imgHold.style.objectFit = "cover";
     imgHold.className = "card-img-top p-2";
-    fetchGoogleImage(imgHold, wine.wineName, wine.vintage);
+    imgHold.style.width = "256px";
+    imgHold.style.height = "256px"
+    fetchImage(imgHold, wine.wineName, wine.winery, wine.vintage);
 
     let cardBody = document.createElement("div");
     cardBody.className = "card-body";
@@ -71,26 +107,34 @@ let createProductCard = (wine) => {
     let button = document.createElement("input");
     button.type = "button";
     button.className = "btn btn-primary";
-    button.value = "Input";
+    button.value = "Details";
 
-    addCardNode.appendChild(cardDiv)
-    cardDiv.appendChild(imgHold)
-    cardDiv.appendChild(cardBody)
-    cardBody.appendChild(title)
+    addCardNode.appendChild(cardDiv);
+    cardDiv.appendChild(imgHold);
+    cardDiv.appendChild(cardBody);
+    cardBody.appendChild(title);
     cardBody.appendChild(button);
 }
 
-
+let createModal = () => {
+    //will create modal for each card
+}
 
 //API Key : AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o
 //engine id/cx : d669cff582af647b3
 
-window.addEventListener("load", function() {
-    showArrayItems();
+addNewProduct.addEventListener("submit", function (e) {
+    if (!checkRegex(getDataFromForm().vintage)) {
+        vintageValidation.classList.add("is-invalid")
+        e.preventDefault()
+        e.stopPropagation()
+    } else {
+        vintageValidation.classList.add('is-valid')
+        e.preventDefault();
+        wineArray.push(getDataFromForm());
+        createProductCard(getDataFromForm());
+        removeEmptyContainer();
+       // window.sessionStorage.setItem(Object.keys(addNewProduct),Object.values(addNewProduct))
+    }
 })
 
-addNewProduct.addEventListener("submit", function (e) {
-    e.preventDefault();
-    wineArray.push(getDataFromForm());
-    createProductCard(getDataFromForm());
-})

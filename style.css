@@ -2,12 +2,16 @@ body {
     background: rgb(255,255,255);
     background: linear-gradient(90deg, rgba(255,255,255,1) 11%, rgba(255,214,238,1) 32%, rgba(255,240,249,1) 52%, rgba(255,255,255,1) 64%, rgba(255,255,255,1) 66%, rgba(255,229,233,0.5438550420168067) 80%, rgba(255,225,230,1) 100%);
     object-fit: cover;
+    position: relative;
 }
 
-body {
-    min-height: 100vh;
+main{
+    margin-bottom: 20px;
 }
-
-footer {
-    margin-top: auto !important;
+.footer-bs{
+    position: absolute;
+    width: 100%;
+    min-height: 100px;
+    bottom: 40px;
+    left: 0;
 }
