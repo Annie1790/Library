@@ -1,2 +1,2 @@
 # Library
-Book collection manager
+Wine collection manager
