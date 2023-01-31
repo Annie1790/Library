@@ -129,12 +129,15 @@ addNewProduct.addEventListener("submit", function (e) {
         e.preventDefault()
         e.stopPropagation()
     } else {
-        vintageValidation.classList.add('is-valid')
-        e.preventDefault();
-        wineArray.push(getDataFromForm());
-        createProductCard(getDataFromForm());
-        removeEmptyContainer();
-       // window.sessionStorage.setItem(Object.keys(addNewProduct),Object.values(addNewProduct))
+        vintageValidation.classList.add('is-valid');
+        if (!addNewProduct.name.value === "" && !addNewProduct.vintage.value === "" && !addNewProduct.winery.value === "") {
+            e.preventDefault();
+            wineArray.push(getDataFromForm());
+            createProductCard(getDataFromForm());
+            removeEmptyContainer();
+            window.sessionStorage.setItem("wines", JSON.stringify(wineArray[0]))
+        }
     }
 })
+
 
