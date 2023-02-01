@@ -17,7 +17,12 @@ const addCardNode = document.getElementById("addContainer")
 const productImage = document.getElementsByClassName("card-img-top p-2");
 const emptyCard = document.getElementById("emptyCard");
 const vintageValidation = document.getElementById("vintage");
+
 let wineArray = [];
+wineArray = JSON.parse(localStorage.getItem('wines')) || []; 
+//null or undefined, akkor a jobboldali erteket fogja hasznalni, "default value"
+//belerakja amit betoltott a wine arraybe
+localStorage.setItem('wines', JSON.stringify(wineArray));
 
 class Wine {
     constructor(wineName, winery, vintage, region, country) {
@@ -73,6 +78,7 @@ let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
             })
         if (response.ok) {
             const jsonData = await response.json();
+            console.log(jsonData)
             if (jsonData) {
                 wineImgSrc.src = jsonData.items[0].link
             }
@@ -120,6 +126,13 @@ let createModal = () => {
     //will create modal for each card
 }
 
+let saveDataToLocalStorage = (data) => {
+    wineArray = JSON.parse(localStorage.getItem('wines'));
+    wineArray.push(data);
+    alert(wineArray);
+    localStorage.setItem('wines', JSON.stringify(wineArray));
+}
+
 //API Key : AIzaSyCk9ieYVeOJzdx06_70PwBZywfOCgKVZ0o
 //engine id/cx : d669cff582af647b3
 
@@ -130,14 +143,16 @@ addNewProduct.addEventListener("submit", function (e) {
         e.stopPropagation()
     } else {
         vintageValidation.classList.add('is-valid');
-        if (!addNewProduct.name.value === "" && !addNewProduct.vintage.value === "" && !addNewProduct.winery.value === "") {
-            e.preventDefault();
-            wineArray.push(getDataFromForm());
-            createProductCard(getDataFromForm());
-            removeEmptyContainer();
-            window.sessionStorage.setItem("wines", JSON.stringify(wineArray[0]))
-        }
+        saveDataToLocalStorage(getDataFromForm())
     }
+})
+console.log(wineArray)
+
+window.addEventListener("load", function() {
+    removeEmptyContainer();
+    wineArray.forEach((item) => {
+        createProductCard(item)
+    })
 })
 
 
