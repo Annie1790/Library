@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library</title>
+    <title>Wine Library</title>
     <script src="./form_functions.js" defer></script>
     <link rel="stylesheet" href="./style.css">
     <link rel="icon" type="image/x-icon" href="./icons8-white-wine-16.png">
@@ -28,7 +28,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="https://github.com/Annie1790">My Github</a>
+
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -50,11 +50,26 @@
                                     (Group project)</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled">Portfolio</a>
-                    </li>
                 </ul>
-                <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
+                <button type="button"  class="btn btn-danger me-1" data-bs-toggle="modal" data-bs-target="#deleteModal"> 
+                    Clear All</button>
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure?</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <h5>You Will lose all your data!</h5>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-danger" id="deleteButton" data-bs-dismiss="modal">Yes</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                <button class="btn btn-primary me-1" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                     Add new wine
                 </button>
@@ -62,6 +77,8 @@
             </div>
         </div>
     </nav>
+
+  
 
     <main>
 
@@ -127,14 +144,14 @@
         <div class="row align-items-end">
             <footer id="footer-bs"
                 class=" d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-                <p class="col-md-4 mb-0 text-muted">&copy; 2022 Aniko Buday</p>
+                <p class="col-md-4 mb-0 text-muted">&copy; 2023 Aniko Buday</p>
                 <ul class="nav col-md-4 justify-content-end">
                     <li class="nav-item px-2"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
                     <li class="nav-item"><a href="mailto:budayaniko@outlook.com" class="nav-link px-2 text-muted">Send
                             email</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+                    <li class="nav-item"> <a href="https://github.com/Annie1790" class="nav-link px-2 text-muted"> My
+                            Github</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Portfolio</a></li>
                 </ul>
             </footer>
         </div>

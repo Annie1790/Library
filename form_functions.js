@@ -11,17 +11,20 @@
                 wineImgSrc.src = value.items[0].link;
             }))
 }*/
+//sessionStorage => maintains while the browser is open
+//localStorage => maintains continues to store data 
 
 const addNewProduct = document.getElementById("addNewProduct");
 const addCardNode = document.getElementById("addContainer")
 const productImage = document.getElementsByClassName("card-img-top p-2");
 const emptyCard = document.getElementById("emptyCard");
 const vintageValidation = document.getElementById("vintage");
+const deleteButton = document.getElementById("deleteButton");
 
 let wineArray = [];
-wineArray = JSON.parse(localStorage.getItem('wines')) || []; 
-//null or undefined, akkor a jobboldali erteket fogja hasznalni, "default value"
-//belerakja amit betoltott a wine arraybe
+wineArray = JSON.parse(localStorage.getItem('wines')) || [];
+//if value is null or undefined, it will use an empty array instead
+//puts wineArray values onto local storage
 localStorage.setItem('wines', JSON.stringify(wineArray));
 
 class Wine {
@@ -34,8 +37,10 @@ class Wine {
     }
 }
 
-//sessionStorage => maintains while the browser is open
-//localStorage => maintains continues to store data 
+deleteButton.addEventListener("click", function() {
+    window.localStorage.clear();
+    window.location.reload();
+})
 
 let removeEmptyContainer = () => {
     if (wineArray.length > 0) {
@@ -78,7 +83,6 @@ let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
             })
         if (response.ok) {
             const jsonData = await response.json();
-            console.log(jsonData)
             if (jsonData) {
                 wineImgSrc.src = jsonData.items[0].link
             }
@@ -112,6 +116,8 @@ let createProductCard = (wine) => {
 
     let button = document.createElement("input");
     button.type = "button";
+    button.dataset = "bs-toggle = 'modal'"
+    button.dataset = "bs-target = 'wine-modal'"
     button.className = "btn btn-primary";
     button.value = "Details";
 
@@ -120,16 +126,15 @@ let createProductCard = (wine) => {
     cardDiv.appendChild(cardBody);
     cardBody.appendChild(title);
     cardBody.appendChild(button);
-}
 
-let createModal = () => {
-    //will create modal for each card
+    button.addEventListener("click", function () {
+        
+    })
 }
 
 let saveDataToLocalStorage = (data) => {
     wineArray = JSON.parse(localStorage.getItem('wines'));
     wineArray.push(data);
-    alert(wineArray);
     localStorage.setItem('wines', JSON.stringify(wineArray));
 }
 
@@ -148,7 +153,7 @@ addNewProduct.addEventListener("submit", function (e) {
 })
 console.log(wineArray)
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     removeEmptyContainer();
     wineArray.forEach((item) => {
         createProductCard(item)
