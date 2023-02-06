@@ -19,7 +19,9 @@ const addCardNode = document.getElementById("addContainer")
 const productImage = document.getElementsByClassName("card-img-top p-2");
 const emptyCard = document.getElementById("emptyCard");
 const vintageValidation = document.getElementById("vintage");
-const deleteButton = document.getElementById("deleteButton");
+const deleteAllButton = document.getElementById("deleteButton");
+
+//for search engine
 
 let wineArray = [];
 wineArray = JSON.parse(localStorage.getItem('wines')) || [];
@@ -37,7 +39,17 @@ class Wine {
     }
 }
 
-deleteButton.addEventListener("click", function() {
+let getDataFromForm = () => {
+    const wineName = addNewProduct.name.value;
+    const winery = addNewProduct.winery.value;
+    const vintage = addNewProduct.vintage.value;
+    const region = addNewProduct.region.value;
+    const country = addNewProduct.country.value;
+
+    return new Wine(wineName, winery, vintage, region, country)
+}
+
+deleteAllButton.addEventListener("click", function () {
     window.localStorage.clear();
     window.location.reload();
 })
@@ -50,26 +62,14 @@ let removeEmptyContainer = () => {
     }
 }
 
-let checkRegex = (vintage) => {
+let checkVintage = (vintage) => {
     const vintageRegex = /19\d{2}|20[01][0-9]|20[02][0-3]/;
     if (vintageRegex.test(vintage) === true) {
-        console.log("Valid");
         return vintage;
     } else {
-        console.log(vintage)
-        console.log("Invalid");
+        console.log(vintage);
 
     }
-}
-
-let getDataFromForm = () => {
-    const wineName = addNewProduct.name.value;
-    const winery = addNewProduct.winery.value;
-    const vintage = addNewProduct.vintage.value;
-    const region = addNewProduct.region.value;
-    const country = addNewProduct.country.value;
-
-    return new Wine(wineName, winery, vintage, region, country)
 }
 
 let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
@@ -83,6 +83,8 @@ let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
             })
         if (response.ok) {
             const jsonData = await response.json();
+            getSnippets(jsonData.items)
+
             if (jsonData) {
                 wineImgSrc.src = jsonData.items[0].link
             }
@@ -92,6 +94,35 @@ let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
         console.error(error)
     }
 }
+
+let getSnippets = (data) => {
+    for (let i = 0; i < data.length; i++) {
+        let snippets = data[i].snippet;
+        return snippets;
+    }
+}
+
+let wineRelatedWords = async () => {
+    try {
+        const response = await fetch("https://api.datamuse.com/words?ml=wine",
+            {
+                mode: "cors",
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+        if (response.ok) {
+            const wineWords = await response.json();
+            for (let i = 0; i < wineWords.length; i++) {
+                return wineWords[i].word;
+            }
+        }
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
 
 let createProductCard = (wine) => {
 
@@ -114,12 +145,12 @@ let createProductCard = (wine) => {
     title.innerHTML = wine.wineName;
     title.className = "card-title";
 
-    let button = document.createElement("input");
+    let button = document.createElement("button");
     button.type = "button";
-    button.dataset = "bs-toggle = 'modal'"
-    button.dataset = "bs-target = 'wine-modal'"
     button.className = "btn btn-primary";
-    button.value = "Details";
+    button.innerHTML = "Details";
+    button.setAttribute("data-bs-toggle", 'modal');
+    button.setAttribute("data-bs-target", '#exampleModal')
 
     addCardNode.appendChild(cardDiv);
     cardDiv.appendChild(imgHold);
@@ -128,8 +159,57 @@ let createProductCard = (wine) => {
     cardBody.appendChild(button);
 
     button.addEventListener("click", function () {
-        
+        createModal(wine.wineName, wine.winery, wine.vintage, wine.region, wine.country);
+        getModalFunctions(wine);
     })
+}
+
+let createModal = (wineName, winery, vintage, region, country) => {
+    let modalWrap = document.createElement("div");
+    modalWrap.innerHTML =
+        `<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        <h5>${wineName}</h5>
+        <h5>${winery}</h5>
+        <h5>${vintage}</h5>
+        <h5>${region}</h5> 
+        <h5>${country}</h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="changeDetails" class="btn btn-secondary">Change Details</button>
+          <button type="button" id="saveChanges" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+          <button type="button" id="deleteWine" class="btn btn-danger">Delete Wine</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    document.body.append(modalWrap);
+}
+
+let getModalFunctions = (data) => {
+    const changeDetails = document.getElementById("changeDetails");
+    const saveChanges = document.getElementById("saveChanges");
+    const deleteWine = document.getElementById("deleteWine");
+
+    deleteWineFunc(deleteWine, data)
+}
+
+let deleteWineFunc = (button, data) => {
+    button.addEventListener("click", function () {
+        let index = wineArray.indexOf(data);
+        if (index > -1) {
+            wineArray.splice(index, 1)
+        };
+        localStorage.setItem('wines', JSON.stringify(wineArray));
+        window.location.reload();
+    }
+    )
 }
 
 let saveDataToLocalStorage = (data) => {
@@ -142,7 +222,7 @@ let saveDataToLocalStorage = (data) => {
 //engine id/cx : d669cff582af647b3
 
 addNewProduct.addEventListener("submit", function (e) {
-    if (!checkRegex(getDataFromForm().vintage)) {
+    if (!checkVintage(getDataFromForm().vintage)) {
         vintageValidation.classList.add("is-invalid")
         e.preventDefault()
         e.stopPropagation()
