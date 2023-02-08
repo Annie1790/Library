@@ -11,8 +11,6 @@
                 wineImgSrc.src = value.items[0].link;
             }))
 }*/
-//sessionStorage => maintains while the browser is open
-//localStorage => maintains continues to store data 
 
 const addNewProduct = document.getElementById("addNewProduct");
 const addCardNode = document.getElementById("addContainer")
@@ -20,8 +18,6 @@ const productImage = document.getElementsByClassName("card-img-top p-2");
 const emptyCard = document.getElementById("emptyCard");
 const vintageValidation = document.getElementById("vintage");
 const deleteAllButton = document.getElementById("deleteButton");
-
-//for search engine
 
 let wineArray = [];
 wineArray = JSON.parse(localStorage.getItem('wines')) || [];
@@ -83,7 +79,6 @@ let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
             })
         if (response.ok) {
             const jsonData = await response.json();
-            getSnippets(jsonData.items)
 
             if (jsonData) {
                 wineImgSrc.src = jsonData.items[0].link
@@ -94,35 +89,6 @@ let fetchImage = async (wineImgSrc, wineName, winery, wineVintage) => {
         console.error(error)
     }
 }
-
-let getSnippets = (data) => {
-    for (let i = 0; i < data.length; i++) {
-        let snippets = data[i].snippet;
-        return snippets;
-    }
-}
-
-let wineRelatedWords = async () => {
-    try {
-        const response = await fetch("https://api.datamuse.com/words?ml=wine",
-            {
-                mode: "cors",
-                headers: {
-                    "Accept": "application/json"
-                }
-            })
-        if (response.ok) {
-            const wineWords = await response.json();
-            for (let i = 0; i < wineWords.length; i++) {
-                return wineWords[i].word;
-            }
-        }
-    }
-    catch (error) {
-        console.log(error)
-    }
-}
-
 
 let createProductCard = (wine) => {
 
@@ -159,12 +125,12 @@ let createProductCard = (wine) => {
     cardBody.appendChild(button);
 
     button.addEventListener("click", function () {
-        createModal(wine.wineName, wine.winery, wine.vintage, wine.region, wine.country);
+        createModal(wine);
         getModalFunctions(wine);
     })
 }
 
-let createModal = (wineName, winery, vintage, region, country) => {
+let createModal = (wine) => {
     let modalWrap = document.createElement("div");
     modalWrap.innerHTML =
         `<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -175,15 +141,13 @@ let createModal = (wineName, winery, vintage, region, country) => {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-        <h5>${wineName}</h5>
-        <h5>${winery}</h5>
-        <h5>${vintage}</h5>
-        <h5>${region}</h5> 
-        <h5>${country}</h5>
+        <h5>${wine.wineName}</h5>
+        <h5>${wine.winery}</h5>
+        <h5>${wine.vintage}</h5>
+        <h5>${wine.region}</h5> 
+        <h5>${wine.country}</h5>
         </div>
         <div class="modal-footer">
-          <button type="button" id="changeDetails" class="btn btn-secondary">Change Details</button>
-          <button type="button" id="saveChanges" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
           <button type="button" id="deleteWine" class="btn btn-danger">Delete Wine</button>
         </div>
       </div>
@@ -193,14 +157,11 @@ let createModal = (wineName, winery, vintage, region, country) => {
 }
 
 let getModalFunctions = (data) => {
-    const changeDetails = document.getElementById("changeDetails");
-    const saveChanges = document.getElementById("saveChanges");
     const deleteWine = document.getElementById("deleteWine");
-
-    deleteWineFunc(deleteWine, data)
+    deleteThisWineFunc(deleteWine, data)
 }
 
-let deleteWineFunc = (button, data) => {
+let deleteThisWineFunc = (button, data) => {
     button.addEventListener("click", function () {
         let index = wineArray.indexOf(data);
         if (index > -1) {
@@ -231,7 +192,6 @@ addNewProduct.addEventListener("submit", function (e) {
         saveDataToLocalStorage(getDataFromForm())
     }
 })
-console.log(wineArray)
 
 window.addEventListener("load", function () {
     removeEmptyContainer();
